@@ -238,7 +238,7 @@ Let's look our results and see how they fit. Plot the return interval on the x a
 QyearlyMins %>% 
   ggplot(aes(x = ReturnInterval, y = minQ, color = "Estimated"))+
   geom_point()+
-  geom_smooth(aes(x = ReturnInterval, y = Qfit, color = "Fitted"))+
+  geom_line(aes(x = ReturnInterval, y = Qfit, color = "Fitted"))+
   theme_classic()+
   scale_x_log10()+
   ylab("X day yearly minimum")+
