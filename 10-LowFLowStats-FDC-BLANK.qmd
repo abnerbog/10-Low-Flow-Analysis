@@ -1,3 +1,10 @@
+---
+title: "10 - Low Flow Stats"
+format:
+  html: 
+    self-contained: true
+---
+
 # Low Flow Analysis {#lfas}
 
 **Pre-activity reading:** 
@@ -31,14 +38,14 @@ We will focus on hydrologic methods. What a surprise! You will most frequently s
 
 "The 1Q10 and 7Q10 are both hydrologically based design flows. The 1Q10 is the lowest 1-day average flow that occurs (on average) once every 10 years. The 7Q10 is the lowest 7-day average flow that occurs (on average) once every 10 years." -EPA <https://www.epa.gov/ceam/definition-and-characteristics-low-flows#1Q10>
 
-So the first number, **the 7 in 7Q10** is how many days we will average flow over to calculate the statistic. Why does does this matte? Why not always use a 1 day flow record?
+So the first number, **the 7 in 7Q10** is how many days we will average flow over to calculate the statistic. Why does does this matter? Why not always use a 1 day flow record?
 
 Then the second number is the return-interval of the flow, or the probability that a flow of that magnitude or lower will occur any given year. **The 10 in 7Q10** means there is a 10 percent chance that the associated 7-day average flow or below will occur in any given year. Another way of saying this is that a flow of that magnitude or below occurs on average once every 10 years. **However** expressing it this way can be dangerous, especially with the opposite type of extreme flows: Floods. Why do you think it could be dangerous to say a flow of this magnitude or below will happen on average once every 10 years?
 
 **So, to calculate a 7Q10** we need:
 * 7-day mean-daily flows
-* The minumum value per year of those 7-day mean-daily flows
-* The return intervals of those flows minimum yearly flows
+* The minimum value per year of those 7-day mean-daily flows
+* The return intervals of those minimum yearly flows
 
 **Because a 7Q10 flow means**
 * There is a 10% chance (return interval = 10) that a river will have a average weekly flow of that level or below in a given year.
@@ -49,13 +56,7 @@ Then the second number is the return-interval of the flow, or the probability th
 Let's get started on an example. We will calculate the 7Q10 low flow statistic for the Linville NC usgs gage (02138500) using daily discharge data from 1922-1984. (parameter = 00060)
 
 ```{r}
-siteno <- "02138500"
-startDate <- "1922-01-01"
-endDate <- "1984-01-01"
-parameter <- "00060"
 
-Qdat <- readNWISdv(siteno, parameter, startDate, endDate) %>% 
-  renameNWISColumns()
   
 ```
 
@@ -85,16 +86,11 @@ As we write the code to do this analysis, we are going to keep in mind that we m
 
 ```{r}
 #set x and y for xQy design flow
-Xday <- 7
-YrecInt <- 10
+
 
 #X day rolling mean, don't fill the ends of the timeseries,
 #don't ignore NAs, use a backward-looking window (right align)
-Qdat <- Qdat %>% mutate(xdaymean = rollmean(Flow, 
-                                            Xday, 
-                                            fill = NA, 
-                                            na.rm = F, 
-                                            align = "right"))
+
 ```
 
 ## Look at what a rolling mean does.
@@ -104,11 +100,7 @@ We just added a new column with the rolling mean, so let's plot it and see what 
 Let's look at June-August 1960. You can't see too well what is going on in the full record.
 
 ```{r}
-Qdat %>% 
-  filter(Date > mdy("06-01-1960") & Date < mdy("08-01-1960")) %>%
-  ggplot(aes(Date, Flow, color = "daily"))+
-    geom_line()+
-    geom_line(aes(x = Date, y = xdaymean, color = "rolling mean"))
+
 ```
 
 
@@ -120,12 +112,7 @@ We will calculate minimum flow per year by creating a *Year* column, grouping by
 
 ```{r}
 #missing less than 10% of each year and 10% or fewer NAs
-QyearlyMins <- Qdat %>% mutate(year = year(Date)) %>%
-                        group_by(year) %>%
-                        summarize(minQ = min(xdaymean, na.rm = T), 
-                                  lenDat = length(Flow),
-                                  lenNAs = sum(is.na(xdaymean))) %>%
-                        filter(lenDat > 328 & lenNAs / lenDat < 0.1) 
+
 ```
 
 ## Calculate return interval
@@ -145,20 +132,13 @@ Once we calculate the return interval and exceedence probability we will plot th
 
 ```{r}
 # add rank column and return interval column
-QyearlyMins <- QyearlyMins %>% 
-                mutate(rank = rank(minQ, ties.method = "first")) %>%
-                mutate(ReturnInterval = (length(rank) + 1)/rank) %>%
-                mutate(ExceedProb = 1 / ReturnInterval)
-      
-ggplot(QyearlyMins, aes(x = ReturnInterval, y = minQ))+
-  geom_point()
+
 
 ```
 
 **Challenge question** How is this similar to a flow duration curve? Could you make a "flow duration curve" from these data? What would it tell you?
 ```{r}
-ggplot(QyearlyMins, aes(x = ExceedProb, y = minQ))+
-  geom_point()
+
 ```
 
 ## Fit to Pearson Type II distribution
@@ -177,13 +157,6 @@ This may sound a little complex, but let's think about it this way:
 Assume the average height from your data was 65 inches and the standard deviation was 6 inches (this is 100% made up), let's look at it.
 
 ```{r}
-fitteddistribution <- rnorm(1000, mean = 65, sd = 6) %>%
-  as_tibble()
-
-ggplot(fitteddistribution, aes(x = value))+
-  stat_ecdf()+
-  xlab("height (in)")+
-  ylab("probability")
 
 ```
 
@@ -191,7 +164,7 @@ To get our 10 year return period (0.1 exceedence probability) we are going to do
 
 There are a bunch of "extreme value" distributions used in these type of analyses. When we talk about floods we will use the Gumbel distribution, for example. For this type of analysis, it is common to use the Pearson Type III distribution.
 
-When we used the normal distribution example, we let R produce the distribution that fit our data. In this case we will use the equation that describes the Person Type III distribution. To predict flow at a given recurrence interval we will need the mean of the logged discharges (Xbar), the frequency factor (K), the standard deviation of the log discharges (S), skewness (g), and the standard normal variate (z). We will first compute this for all of the values in our dataset to see how the fitted values fit our calculated values.
+When we used the normal distribution example, we let R produce the distribution that fit our data. In this case we will use the equation that describes the Pearson Type III distribution. To predict flow at a given recurrence interval we will need the mean of the logged discharges (Xbar), the frequency factor (K), the standard deviation of the log discharges (S), skewness (g), and the standard normal variate (z). We will first compute this for all of the values in our data set to see how the fitted values fit our calculated values.
 
 **Pearson Type III**
 
@@ -221,28 +194,16 @@ y = recurrence interval
 
 ```{r}
 #Measures of the distribution
-Xbar <- mean(log(QyearlyMins$minQ))
-S    <- sd(log(QyearlyMins$minQ))
-g    <- skewness(log(QyearlyMins$minQ))
+
  
 #calculate z, K, to plot the fitted Pearson Type III
-QyearlyMins <- QyearlyMins %>% 
-  mutate(z = 4.91 * ((1 / ReturnInterval) ^ 0.14 - (1 - 1 / ReturnInterval) ^ 0.14)) %>%
-  mutate(K = (2 / g) * (((1 + (g * z) / 6 - (g ^ 2) / 36) ^ 3) - 1) ) %>%
-  mutate(Qfit = exp(Xbar + K * S))
+
 ```
 
 Let's look our results and see how they fit. Plot the return interval on the x axis and flow on the y. Plot minQ, the minimum Q data, and Qfit, the data from the the model fit. 
 
 ```{r}
-QyearlyMins %>% 
-  ggplot(aes(x = ReturnInterval, y = minQ, color = "Estimated"))+
-  geom_point()+
-  geom_line(aes(x = ReturnInterval, y = Qfit, color = "Fitted"))+
-  theme_classic()+
-  scale_x_log10()+
-  ylab("X day yearly minimum")+
-  xlab("Return Interval")
+
 ```
 
 Above we calculated z, K and the flow for each return interval in our data record to see how the distribution fit our data. We can see it fits quite well. 
@@ -253,19 +214,16 @@ We will set y equal to YrecInt, which we set above. This way we can just change 
 
 ```{r}
 #xQy ei: 7Q10
-y = YrecInt
+
 
 #Find these values based on established relationships
-z    <- 4.91 * ((1 / y) ^ 0.14 - (1 - 1 / y) ^ 0.14)
-K    <- (2 / g) * (((1 + (g * z) / 6 - (g ^ 2) / 36) ^ 3) - 1) 
 
-PearsonxQy <- exp(Xbar + K * S)
 ```
 
 So, our 7Q10 flow in cfs for this gage is....
 ```{r}
 #Low flow stat (7Q10 in exercise)
-PearsonxQy
+
 ```
 
 ## Distribution-free method
