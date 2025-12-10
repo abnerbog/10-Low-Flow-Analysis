@@ -1,8 +1,24 @@
 ---
-title: "10 - Low Flow Stats"
+title: "Chapter 10: Low Flow Stats"
+date: today
+github: https://github.com/VT-Hydroinformatics/10-Low-Flow-Analysis
+author:
+  - name: JP Gannon
+    orcid: 0000-0002-4595-3214
+    github: jpgannon
+    url: https://jpgannon.github.io/
+    affiliation: 
+      - name: Virginia Tech
+        url: https://www.vt.edu/
 format:
   html: 
     self-contained: true
+  ipynb:
+      nb-frontmatter: true
+jupyter: 
+  kernel: ir
+execute: 
+  enabled: true
 ---
 
 # Low Flow Analysis {#lfas}
