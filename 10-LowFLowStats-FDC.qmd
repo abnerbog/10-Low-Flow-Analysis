@@ -1,11 +1,26 @@
 ---
-title: "10 - Low Flow Stats"
+title: "Chapter 10: Low Flow Stats"
+date: today
+author:
+  - name: JP Gannon
+    orcid: 0000-0002-4595-3214
+    url: https://jpgannon.github.io/
+    affiliation: 
+      - name: Virginia Tech
+        url: https://www.vt.edu/
 format:
   html: 
     self-contained: true
+  ipynb:
+    nb-frontmatter: true
+    jupyter:
+      kernel: ir
+      ipynb-shell-interactivity: all
+execute: 
+  enabled: true
 ---
 
-# Low Flow Analysis {#lfas}
+# Low Flow Analysis
 
 **Pre-activity reading:** 
 
