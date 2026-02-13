@@ -1,6 +1,6 @@
 # Chapter 10: Low Flow Stats
 JP Gannon
-2026-02-12
+2026-02-13
 
 # Low Flow Analysis
 
@@ -14,6 +14,9 @@ JP Gannon
 
 <https://nepis.epa.gov/Exe/ZyPDF.cgi?Dockey=P100BK6P.txt>
 
+The github repository for these notes can be found here:
+<https://github.com/VT-Hydroinformatics/10-Low-Flow-Analysis>
+
 *Load packages for analysis. zoo will allow us to easily perform rolling
 means, and moments will allow easy calculation of skewness.*
 
@@ -21,7 +24,6 @@ means, and moments will allow easy calculation of skewness.*
 library(zoo)
 library(tidyverse)
 library(dataRetrieval)
-library(lubridate)
 library(moments)
 
 theme_set(theme_classic())
@@ -74,23 +76,29 @@ below in a given year.
 ## Get data
 
 Let’s get started on an example. We will calculate the 7Q10 low flow
-statistic for the Linville NC usgs gage (02138500) using daily discharge
-data from 1922-1984. (parameter = 00060)
+statistic for the Linville NC usgs gage (USGS-02138500) using daily
+discharge data from 1922-1984. (parameter = 00060)
 
 ``` r
-siteno <- "02138500"
+siteno <- "USGS-02138500"
 startDate <- "1922-01-01"
 endDate <- "1984-01-01"
 parameter <- "00060"
 
-Qdat <- readNWISdv(siteno, parameter, startDate, endDate) |> 
-  renameNWISColumns()
+times <- c(startDate, endDate)
+
+Qdat <- read_waterdata_daily(
+  monitoring_location_id = siteno, 
+  parameter_code = parameter,
+  time = times, 
+  skipGeometry = TRUE
+)
 ```
 
-    Warning: NWIS servers are slated for decommission. Please begin to migrate to
-    read_waterdata_daily.
+    Requesting:
+    https://api.waterdata.usgs.gov/ogcapi/v0/collections/daily/items?f=json&lang=en-US&skipGeometry=TRUE&monitoring_location_id=USGS-02138500&parameter_code=00060&time=1922-01-01%2F1984-01-01&limit=50000
 
-    GET: https://waterservices.usgs.gov/nwis/dv/?site=02138500&format=waterml%2C1.1&ParameterCd=00060&StatCd=00003&startDT=1922-01-01&endDT=1984-01-01
+    ⠙ Iterating 1 done (0.43/s) | 2.3s
 
 ## Create the X days average flow record
 
@@ -139,7 +147,7 @@ YrecInt <- 10
 
 #X day rolling mean, don't fill the ends of the timeseries,
 #don't ignore NAs, use a backward-looking window (right align)
-Qdat <- Qdat |> mutate(xdaymean = rollmean(Flow, 
+Qdat <- Qdat |> mutate(xdaymean = rollmean(value, 
                                             Xday, 
                                             fill = NA, 
                                             na.rm = F, 
@@ -156,10 +164,11 @@ in the full record.
 
 ``` r
 Qdat |> 
-  filter(Date > mdy("06-01-1960") & Date < mdy("08-01-1960")) |>
-  ggplot(aes(Date, Flow, color = "daily"))+
+  filter(time > mdy("06-01-1960") & time < mdy("08-01-1960")) |>
+  ggplot(aes(time, value, color = "daily"))+
     geom_line()+
-    geom_line(aes(x = Date, y = xdaymean, color = "rolling mean"))
+    geom_line(aes(x = time, y = xdaymean, color = "rolling mean"))+
+    ylab("Flow in CFS")
 ```
 
 ![](10-LowFLowStats-FDC_files/figure-commonmark/unnamed-chunk-4-1.png)
@@ -179,10 +188,10 @@ or more days.
 
 ``` r
 #missing less than 10% of each year and 10% or fewer NAs
-QyearlyMins <- Qdat |> mutate(year = year(Date)) |>
+QyearlyMins <- Qdat |> mutate(year = year(time)) |>
                         group_by(year) |>
                         summarize(minQ = min(xdaymean, na.rm = T), 
-                                  lenDat = length(Flow),
+                                  lenDat = length(value),
                                   lenNAs = sum(is.na(xdaymean))) |>
                         filter(lenDat > 328 & lenNAs / lenDat < 0.1) 
 ```

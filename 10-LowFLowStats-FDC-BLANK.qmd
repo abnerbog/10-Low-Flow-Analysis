@@ -5,7 +5,7 @@ format:
     self-contained: true
 ---
 
-# Low Flow Analysis {#lfas}
+# Low Flow Analysis
 
 **Pre-activity reading:** 
 
@@ -17,12 +17,13 @@ format:
 
 <https://nepis.epa.gov/Exe/ZyPDF.cgi?Dockey=P100BK6P.txt>
 
+The github repository for these notes can be found here: <https://github.com/VT-Hydroinformatics/10-Low-Flow-Analysis>
+
 *Load packages for analysis. zoo will allow us to easily perform rolling means, and moments will allow easy calculation of skewness.*
 ```{r, warning=FALSE, results='hide',message=FALSE}
 library(zoo)
 library(tidyverse)
 library(dataRetrieval)
-library(lubridate)
 library(moments)
 
 theme_set(theme_classic())
@@ -53,9 +54,10 @@ Then the second number is the return-interval of the flow, or the probability th
 
 ## Get data
 
-Let's get started on an example. We will calculate the 7Q10 low flow statistic for the Linville NC usgs gage (02138500) using daily discharge data from 1922-1984. (parameter = 00060)
+Let's get started on an example. We will calculate the 7Q10 low flow statistic for the Linville NC usgs gage (USGS-02138500) using daily discharge data from 1922-1984. (parameter = 00060)
 
 ```{r}
+
 
   
 ```
@@ -158,6 +160,7 @@ Assume the average height from your data was 65 inches and the standard deviatio
 
 ```{r}
 
+
 ```
 
 To get our 10 year return period (0.1 exceedence probability) we are going to do the same thing, except we know the distribution of the data isn't normal, so we have to use a different distribution. 
@@ -217,6 +220,9 @@ We will set y equal to YrecInt, which we set above. This way we can just change 
 
 
 #Find these values based on established relationships
+z    <- 4.91 * ((1 / y) ^ 0.14 - (1 - 1 / y) ^ 0.14)
+K    <- (2 / g) * (((1 + (g * z) / 6 - (g ^ 2) / 36) ^ 3) - 1) 
+
 
 ```
 
