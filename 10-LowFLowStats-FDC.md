@@ -1,6 +1,11 @@
-# Chapter 10: Low Flow Stats
-JP Gannon
-2026-02-13
+---
+title: 'Chapter 10: Low Flow Stats'
+date: 2026-03-23T00:00:00.000Z
+authors:
+  - id: jpgannon
+github: https://github.com/VT-Hydroinformatics/10-Low-Flow-Analysis
+---
+
 
 # Low Flow Analysis
 
@@ -96,9 +101,13 @@ Qdat <- read_waterdata_daily(
 ```
 
     Requesting:
-    https://api.waterdata.usgs.gov/ogcapi/v0/collections/daily/items?f=json&lang=en-US&skipGeometry=TRUE&monitoring_location_id=USGS-02138500&parameter_code=00060&time=1922-01-01%2F1984-01-01&limit=50000
+    https://api.waterdata.usgs.gov/ogcapi/v0/collections/daily/items?f=json&lang=en-US&skipGeometry=TRUE&limit=10000&monitoring_location_id=USGS-02138500&parameter_code=00060&time=1922-01-01%2F1984-01-01
 
-    ⠙ Iterating 1 done (0.43/s) | 2.3s
+    ⠙ Iterating 1 done (0.22/s) | 4.6s
+
+    ⠹ Iterating 2 done (0.17/s) | 12.1s
+
+    ⠹ Iterating 3 done (0.21/s) | 14.6s
 
 ## Create the X days average flow record
 
