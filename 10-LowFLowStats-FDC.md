@@ -3,7 +3,27 @@ title: 'Chapter 10: Low Flow Stats'
 date: 2026-03-23T00:00:00.000Z
 authors:
   - id: jpgannon
+    name: JP Gannon
+    email: jpgannon@vt.edu
+    github: jpgannon
+    orcid: 0000-0002-4595-3214
+    corresponding: true
+    url: https://jpgannon.github.io/
+    affiliations:
+      - vt-tech
+affiliations:
+  - id: vt-tech
+    name: Virginia Tech
+    url: https://www.vt.edu/
+subject: Courseware
+doi: https://doi.org/10.4211/hs.fc99b05e8416457b9d4c224f60f983fc
+venue:
+  title: View Resource on HydroShare
+  url: https://hydroshare.org/resource/fc99b05e8416457b9d4c224f60f983fc/
 github: https://github.com/VT-Hydroinformatics/10-Low-Flow-Analysis
+downloads:
+  - file: 10-LowFLowStats-FDC.md
+  - file: 10-LowFLowStats-FDC.pdf
 ---
 
 
@@ -103,11 +123,11 @@ Qdat <- read_waterdata_daily(
     Requesting:
     https://api.waterdata.usgs.gov/ogcapi/v0/collections/daily/items?f=json&lang=en-US&skipGeometry=TRUE&limit=10000&monitoring_location_id=USGS-02138500&parameter_code=00060&time=1922-01-01%2F1984-01-01
 
-    ⠙ Iterating 1 done (0.22/s) | 4.6s
+    ⠙ Iterating 1 done (0.42/s) | 2.4s
 
-    ⠹ Iterating 2 done (0.17/s) | 12.1s
+    ⠹ Iterating 2 done (0.48/s) | 4.1s
 
-    ⠹ Iterating 3 done (0.21/s) | 14.6s
+    ⠹ Iterating 3 done (0.5/s) | 6s
 
 ## Create the X days average flow record
 

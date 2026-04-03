@@ -3,7 +3,27 @@ title: "Chapter 10: Low Flow Stats"
 date: 2026-03-23
 authors:
   - id: jpgannon
+    name: JP Gannon
+    email: jpgannon@vt.edu
+    github: jpgannon
+    orcid: 0000-0002-4595-3214
+    corresponding: true
+    url: https://jpgannon.github.io/
+    affiliations:
+      - vt-tech
+affiliations:
+  - id: vt-tech
+    name: Virginia Tech
+    url: https://www.vt.edu/
+subject: Courseware
+doi: https://doi.org/10.4211/hs.fc99b05e8416457b9d4c224f60f983fc
+venue:
+  title: View Resource on HydroShare
+  url: https://hydroshare.org/resource/fc99b05e8416457b9d4c224f60f983fc/
 github: https://github.com/VT-Hydroinformatics/10-Low-Flow-Analysis
+downloads:
+  - file: 10-LowFLowStats-FDC.md
+  - file: 10-LowFLowStats-FDC.pdf
 ---
 
 # Low Flow Analysis
